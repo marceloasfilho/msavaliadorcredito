@@ -11,5 +11,5 @@ import java.util.List;
 @FeignClient(value = "mscartoes", path = "cartoes")
 public interface MsCartoesClient {
     @GetMapping(path = "/cpf", params = "cpf")
-    public ResponseEntity<List<CartaoCliente>> obterCartoesPorCpf(@RequestParam("cpf") String cpf);
+    ResponseEntity<List<CartaoCliente>> obterCartoesPorCpf(@RequestParam("cpf") String cpf);
 }
