@@ -1,5 +1,6 @@
 package io.github.marceloasfilho.msavaliadorcredito.controller;
 
+import io.github.marceloasfilho.msavaliadorcredito.entity.AvaliacaoCliente;
 import io.github.marceloasfilho.msavaliadorcredito.entity.SituacaoCliente;
 import io.github.marceloasfilho.msavaliadorcredito.exceptions.DadosClientesNotFoundException;
 import io.github.marceloasfilho.msavaliadorcredito.exceptions.ErrorComunicacaoMicrosservicesException;
@@ -7,10 +8,9 @@ import io.github.marceloasfilho.msavaliadorcredito.service.AvaliadorCreditoServi
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping(path = "avaliador-credito")
@@ -24,22 +24,35 @@ public class AvaliadorCreditoController {
     }
 
     @GetMapping(path = "/status")
-    public String status(){
+    public String status() {
         log.info("Status MSAVALIADORCREDITO");
         return "Status MSAVALIADORCREDITO";
     }
 
     @GetMapping(path = "situacao-cliente", params = "cpf")
-    public ResponseEntity<?> obterSituacaoCliente(@RequestParam("cpf") String cpf){
+    public ResponseEntity<?> obterSituacaoCliente(@RequestParam("cpf") String cpf) {
         SituacaoCliente situacaoCliente;
         try {
             situacaoCliente = this.avaliadorCreditoService.obterSituacaoCliente(cpf);
         } catch (DadosClientesNotFoundException e) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         } catch (ErrorComunicacaoMicrosservicesException e) {
-            assert HttpStatus.resolve(e.getStatus()) != null;
             return new ResponseEntity<>(e.getMessage(), HttpStatus.resolve(e.getStatus()));
         }
         return new ResponseEntity<>(situacaoCliente, HttpStatus.OK);
+    }
+
+    @PostMapping(path = "realizar-avaliacao")
+    public ResponseEntity<?> realizarAvaliacao(@RequestParam("cpf") String cpf, @RequestParam("renda") Long renda) {
+        List<AvaliacaoCliente> avaliacaoClientes;
+        try {
+            avaliacaoClientes = this.avaliadorCreditoService.realizarAvaliacao(cpf, renda);
+        } catch (DadosClientesNotFoundException e) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        } catch (ErrorComunicacaoMicrosservicesException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.resolve(e.getStatus()));
+        }
+
+        return new ResponseEntity<>(avaliacaoClientes, HttpStatus.OK);
     }
 }
