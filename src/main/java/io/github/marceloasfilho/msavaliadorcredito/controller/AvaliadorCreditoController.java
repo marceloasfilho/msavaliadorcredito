@@ -1,9 +1,12 @@
 package io.github.marceloasfilho.msavaliadorcredito.controller;
 
 import io.github.marceloasfilho.msavaliadorcredito.entity.AvaliacaoCliente;
+import io.github.marceloasfilho.msavaliadorcredito.entity.EmissaoCartao;
+import io.github.marceloasfilho.msavaliadorcredito.entity.EmissaoCartaoProtocolo;
 import io.github.marceloasfilho.msavaliadorcredito.entity.SituacaoCliente;
 import io.github.marceloasfilho.msavaliadorcredito.exceptions.DadosClientesNotFoundException;
 import io.github.marceloasfilho.msavaliadorcredito.exceptions.ErrorComunicacaoMicrosservicesException;
+import io.github.marceloasfilho.msavaliadorcredito.exceptions.SolicitarEmissaoCartaoException;
 import io.github.marceloasfilho.msavaliadorcredito.service.AvaliadorCreditoService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -16,7 +19,6 @@ import java.util.List;
 @RequestMapping(path = "avaliador-credito")
 @Slf4j
 public class AvaliadorCreditoController {
-
     public final AvaliadorCreditoService avaliadorCreditoService;
 
     public AvaliadorCreditoController(AvaliadorCreditoService avaliadorCreditoService) {
@@ -29,7 +31,7 @@ public class AvaliadorCreditoController {
         return "Status MSAVALIADORCREDITO";
     }
 
-    @GetMapping(path = "situacao-cliente", params = "cpf")
+    @GetMapping(path = "/situacao-cliente", params = "cpf")
     public ResponseEntity<?> obterSituacaoCliente(@RequestParam("cpf") String cpf) {
         SituacaoCliente situacaoCliente;
         try {
@@ -42,7 +44,7 @@ public class AvaliadorCreditoController {
         return new ResponseEntity<>(situacaoCliente, HttpStatus.OK);
     }
 
-    @PostMapping(path = "realizar-avaliacao")
+    @PostMapping(path = "/realizar-avaliacao")
     public ResponseEntity<?> realizarAvaliacao(@RequestParam("cpf") String cpf, @RequestParam("renda") Long renda) {
         List<AvaliacaoCliente> avaliacaoClientes;
         try {
@@ -54,5 +56,15 @@ public class AvaliadorCreditoController {
         }
 
         return new ResponseEntity<>(avaliacaoClientes, HttpStatus.OK);
+    }
+
+    @PostMapping(path = "/solicitarCartao")
+    public ResponseEntity<?> solicitarCartao(@RequestBody EmissaoCartao emissaoCartao) {
+        try {
+            EmissaoCartaoProtocolo emissaoCartaoProtocolo = this.avaliadorCreditoService.solicitarEmissaoCartao(emissaoCartao);
+            return new ResponseEntity<>(emissaoCartaoProtocolo, HttpStatus.OK);
+        } catch (SolicitarEmissaoCartaoException sec) {
+            return new ResponseEntity<>(sec.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 }

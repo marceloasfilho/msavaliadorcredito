@@ -6,6 +6,8 @@ import io.github.marceloasfilho.msavaliadorcredito.client.MsClientesClient;
 import io.github.marceloasfilho.msavaliadorcredito.entity.*;
 import io.github.marceloasfilho.msavaliadorcredito.exceptions.DadosClientesNotFoundException;
 import io.github.marceloasfilho.msavaliadorcredito.exceptions.ErrorComunicacaoMicrosservicesException;
+import io.github.marceloasfilho.msavaliadorcredito.exceptions.SolicitarEmissaoCartaoException;
+import io.github.marceloasfilho.msavaliadorcredito.mqueue.EmissaoCartaoPublisher;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -13,6 +15,7 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -20,6 +23,7 @@ public class AvaliadorCreditoServiceImpl implements AvaliadorCreditoService {
 
     private final MsClientesClient msClientesClient;
     private final MsCartoesClient msCartoesClient;
+    private final EmissaoCartaoPublisher emissaoCartaoPublisher;
 
     @Override
     public SituacaoCliente obterSituacaoCliente(String cpf)
@@ -45,7 +49,7 @@ public class AvaliadorCreditoServiceImpl implements AvaliadorCreditoService {
 
     @Override
     public List<AvaliacaoCliente> realizarAvaliacao(String cpf, Long renda)
-            throws DadosClientesNotFoundException, ErrorComunicacaoMicrosservicesException{
+            throws DadosClientesNotFoundException, ErrorComunicacaoMicrosservicesException {
 
         try {
             ResponseEntity<DadosCliente> dadosClienteResponse = this.msClientesClient.obterDadosClientePorCPF(cpf);
@@ -53,7 +57,7 @@ public class AvaliadorCreditoServiceImpl implements AvaliadorCreditoService {
 
             List<Cartao> cartoes = cartoesResponse.getBody();
 
-            List<AvaliacaoCliente> avaliacoesCliente = cartoes.stream().map(cartao -> {
+            return cartoes.stream().map(cartao -> {
                 DadosCliente dadosCliente = dadosClienteResponse.getBody();
 
                 BigDecimal limiteBasico = cartao.getLimite();
@@ -62,16 +66,12 @@ public class AvaliadorCreditoServiceImpl implements AvaliadorCreditoService {
                 BigDecimal fator = idadeCliente.divide(BigDecimal.TEN);
                 BigDecimal limiteAprovado = fator.multiply(limiteBasico);
 
-                AvaliacaoCliente avaliacaoCliente = AvaliacaoCliente.builder()
+                return AvaliacaoCliente.builder()
                         .cartao(cartao.getNome())
                         .bandeira(cartao.getBandeira())
                         .limiteAprovado(limiteAprovado)
                         .build();
-
-                return avaliacaoCliente;
             }).toList();
-
-            return avaliacoesCliente;
 
         } catch (FeignException.FeignClientException fe) {
             int status = fe.status();
@@ -79,6 +79,16 @@ public class AvaliadorCreditoServiceImpl implements AvaliadorCreditoService {
                 throw new DadosClientesNotFoundException();
             }
             throw new ErrorComunicacaoMicrosservicesException(fe.getMessage(), status);
+        }
+    }
+
+    public EmissaoCartaoProtocolo solicitarEmissaoCartao(EmissaoCartao emissaoCartao) {
+        try {
+            this.emissaoCartaoPublisher.solicitarCartao(emissaoCartao);
+            String protocolo = UUID.randomUUID().toString();
+            return new EmissaoCartaoProtocolo(protocolo);
+        } catch (Exception e) {
+            throw new SolicitarEmissaoCartaoException(e.getMessage());
         }
     }
 }
