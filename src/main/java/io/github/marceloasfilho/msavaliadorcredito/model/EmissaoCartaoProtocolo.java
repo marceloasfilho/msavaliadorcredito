@@ -1,4 +1,4 @@
-package io.github.marceloasfilho.msavaliadorcredito.entity;
+package io.github.marceloasfilho.msavaliadorcredito.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

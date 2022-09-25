@@ -3,10 +3,10 @@ package io.github.marceloasfilho.msavaliadorcredito.service;
 import feign.FeignException;
 import io.github.marceloasfilho.msavaliadorcredito.client.MsCartoesClient;
 import io.github.marceloasfilho.msavaliadorcredito.client.MsClientesClient;
-import io.github.marceloasfilho.msavaliadorcredito.entity.*;
 import io.github.marceloasfilho.msavaliadorcredito.exceptions.DadosClientesNotFoundException;
 import io.github.marceloasfilho.msavaliadorcredito.exceptions.ErrorComunicacaoMicrosservicesException;
 import io.github.marceloasfilho.msavaliadorcredito.exceptions.SolicitarEmissaoCartaoException;
+import io.github.marceloasfilho.msavaliadorcredito.model.*;
 import io.github.marceloasfilho.msavaliadorcredito.mqueue.EmissaoCartaoPublisher;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -14,6 +14,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.List;
 import java.util.UUID;
 
@@ -63,7 +64,7 @@ public class AvaliadorCreditoServiceImpl implements AvaliadorCreditoService {
                 BigDecimal limiteBasico = cartao.getLimite();
                 BigDecimal idadeCliente = BigDecimal.valueOf(dadosCliente.getIdade());
 
-                BigDecimal fator = idadeCliente.divide(BigDecimal.TEN);
+                BigDecimal fator = idadeCliente.divide(BigDecimal.TEN, RoundingMode.FLOOR);
                 BigDecimal limiteAprovado = fator.multiply(limiteBasico);
 
                 return AvaliacaoCliente.builder()

@@ -1,9 +1,9 @@
 package io.github.marceloasfilho.msavaliadorcredito.service;
 
-import io.github.marceloasfilho.msavaliadorcredito.entity.AvaliacaoCliente;
-import io.github.marceloasfilho.msavaliadorcredito.entity.EmissaoCartao;
-import io.github.marceloasfilho.msavaliadorcredito.entity.EmissaoCartaoProtocolo;
-import io.github.marceloasfilho.msavaliadorcredito.entity.SituacaoCliente;
+import io.github.marceloasfilho.msavaliadorcredito.model.AvaliacaoCliente;
+import io.github.marceloasfilho.msavaliadorcredito.model.EmissaoCartao;
+import io.github.marceloasfilho.msavaliadorcredito.model.EmissaoCartaoProtocolo;
+import io.github.marceloasfilho.msavaliadorcredito.model.SituacaoCliente;
 import io.github.marceloasfilho.msavaliadorcredito.exceptions.DadosClientesNotFoundException;
 import io.github.marceloasfilho.msavaliadorcredito.exceptions.ErrorComunicacaoMicrosservicesException;
 import io.github.marceloasfilho.msavaliadorcredito.exceptions.SolicitarEmissaoCartaoException;

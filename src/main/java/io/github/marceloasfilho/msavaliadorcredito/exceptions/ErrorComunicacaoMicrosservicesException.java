@@ -5,7 +5,7 @@ import lombok.Getter;
 public class ErrorComunicacaoMicrosservicesException extends Exception {
 
     @Getter
-    private Integer status;
+    private final Integer status;
 
     public ErrorComunicacaoMicrosservicesException(String message, Integer status) {
         super(message);

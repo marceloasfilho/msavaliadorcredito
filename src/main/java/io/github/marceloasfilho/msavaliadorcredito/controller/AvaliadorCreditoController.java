@@ -1,12 +1,12 @@
 package io.github.marceloasfilho.msavaliadorcredito.controller;
 
-import io.github.marceloasfilho.msavaliadorcredito.entity.AvaliacaoCliente;
-import io.github.marceloasfilho.msavaliadorcredito.entity.EmissaoCartao;
-import io.github.marceloasfilho.msavaliadorcredito.entity.EmissaoCartaoProtocolo;
-import io.github.marceloasfilho.msavaliadorcredito.entity.SituacaoCliente;
 import io.github.marceloasfilho.msavaliadorcredito.exceptions.DadosClientesNotFoundException;
 import io.github.marceloasfilho.msavaliadorcredito.exceptions.ErrorComunicacaoMicrosservicesException;
 import io.github.marceloasfilho.msavaliadorcredito.exceptions.SolicitarEmissaoCartaoException;
+import io.github.marceloasfilho.msavaliadorcredito.model.AvaliacaoCliente;
+import io.github.marceloasfilho.msavaliadorcredito.model.EmissaoCartao;
+import io.github.marceloasfilho.msavaliadorcredito.model.EmissaoCartaoProtocolo;
+import io.github.marceloasfilho.msavaliadorcredito.model.SituacaoCliente;
 import io.github.marceloasfilho.msavaliadorcredito.service.AvaliadorCreditoService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -26,9 +26,8 @@ public class AvaliadorCreditoController {
     }
 
     @GetMapping(path = "/status")
-    public String status() {
+    public void status() {
         log.info("Status MSAVALIADORCREDITO");
-        return "Status MSAVALIADORCREDITO";
     }
 
     @GetMapping(path = "/situacao-cliente", params = "cpf")

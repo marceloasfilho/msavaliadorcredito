@@ -1,7 +1,7 @@
 package io.github.marceloasfilho.msavaliadorcredito.client;
 
-import io.github.marceloasfilho.msavaliadorcredito.entity.Cartao;
-import io.github.marceloasfilho.msavaliadorcredito.entity.CartaoCliente;
+import io.github.marceloasfilho.msavaliadorcredito.model.Cartao;
+import io.github.marceloasfilho.msavaliadorcredito.model.CartaoCliente;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
