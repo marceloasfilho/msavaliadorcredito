@@ -18,7 +18,8 @@ public class EmissaoCartaoPublisher {
         String json = this.toJson(emissaoCartao);
         this.rabbitTemplate.convertAndSend(this.queueEmissaoCartao.getName(), json);
     }
-    private String toJson(EmissaoCartao emissaoCartao) throws JsonProcessingException{
+
+    private String toJson(EmissaoCartao emissaoCartao) throws JsonProcessingException {
         ObjectMapper mapper = new ObjectMapper();
         return mapper.writeValueAsString(emissaoCartao);
     }

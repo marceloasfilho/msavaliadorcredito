@@ -11,7 +11,7 @@ import org.springframework.cloud.openfeign.EnableFeignClients;
 @EnableFeignClients
 @EnableRabbit
 public class MsavaliadorcreditoApplication {
-	public static void main(String[] args) {
-		SpringApplication.run(MsavaliadorcreditoApplication.class, args);
-	}
+    public static void main(String[] args) {
+        SpringApplication.run(MsavaliadorcreditoApplication.class, args);
+    }
 }
